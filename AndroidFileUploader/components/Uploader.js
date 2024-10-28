@@ -8,18 +8,13 @@ const Uploader = ({ fetchPdfList }) => {
   const [loading, setLoading] = useState(false);
 
   const handleFilePicker = async () => {
-    console.log('Opening Document Picker...');
     try {
       const result = await DocumentPicker.getDocumentAsync({
         type: 'application/pdf',
         copyToCacheDirectory: true,
       });
-
-      console.log('Document Picker Result:', JSON.stringify(result));
-
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const selectedFile = result.assets[0];
-        console.log('File selected successfully:', selectedFile);
         setFile(selectedFile);
         Alert.alert('File Selected', `You selected: ${selectedFile.name}`);
       } else {
@@ -35,35 +30,34 @@ const Uploader = ({ fetchPdfList }) => {
 
   const handleUpload = async () => {
     if (!file) {
-      console.warn('No file is selected for upload');
       Alert.alert('Error', 'Please select a file to upload.');
       return;
     }
-
-    setLoading(true);
+    const formData = new FormData();
+    formData.append('file', file);
     try {
-      console.log('Starting file upload:', file.uri);
-
-      const formData = new FormData();
-      formData.append('file', {
-        uri: file.uri,
-        name: file.name,
-        type: file.mimeType,
-      });
-
-      const response = await uploadFile(formData);
-
-      console.log('Upload successful:', response.data);
-      fetchPdfList();
-      Alert.alert('Success', 'File uploaded successfully');
-      setFile(null);
+      const response = await uploadFile(file);
+      if (response.status === 201) {
+        console.log("ok")
+      }
     } catch (error) {
       console.error('Error uploading file:', error);
-      Alert.alert('Error', 'Error uploading file');
+    }
+    /*
+    setLoading(true);
+    try {
+      const response = await uploadFile(formData);
+      if (response.status === 201) {
+        fetchPdfList();
+        Alert.alert('Success', 'File uploaded successfully');
+        setFile(null);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to upload file.');
     } finally {
-      console.log('Upload process complete');
       setLoading(false);
     }
+      */
   };
 
   return (

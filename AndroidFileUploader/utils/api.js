@@ -14,7 +14,6 @@ export const uploadFile = async (formData) => {
 export const fetchPdfs = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/api/pdfs/`);
-    console.log('Received PDF Data:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching PDFs:', error);
